@@ -1,3 +1,4 @@
+
 # Fanatics Order Allocation API
 
 [![Build Status](https://github.com/francisnardi/fanatics/workflows/CI/badge.svg)](https://github.com/francisnardi/fanatics/actions)
@@ -131,4 +132,37 @@ This project is unlicensed for demonstration purposes. For production use, conta
 
 ---
 
-Built by [Francisco Nardi](https://github.com/francisnardi) as a technical challenge for Fanatics/Avenue Code.
+Built by [Francis Nardi](https://github.com/francisnardi) as a technical challenge for Fanatics/Avenue Code.
+```
+
+---
+
+### Implementation Instructions
+1. **Replace README.md**:
+   - Open `README.md` in your project (`fanatics/README.md`).
+   - Copy and paste the content above, replacing the existing content.
+   - Save the file.
+
+2. **Commit and Push**:
+   ```bash
+   git add README.md
+   git commit -m "Update README: Rewrite in US English with complete project details, Codecov badge, and troubleshooting"
+   git push origin main
+   ```
+
+3. **Verify Changes**:
+   - Check the repository at `https://github.com/francisnardi/fanatics` to ensure the README renders correctly with badges and formatting.
+   - Confirm that the Codecov badge links to `https://codecov.io/gh/francisnardi/fanatics`.
+   - Test locally to ensure no errors:
+     ```bash
+     python manage.py migrate
+     python manage.py populate_centers
+     pytest --cov=. --cov-branch --cov-report=xml
+     python manage.py runserver
+     curl http://127.0.0.1:8000/docs/ -H "Api-Key: your-secret-key"
+     ```
+
+4. **Add Repository Description and Topics**:
+   - Go to `https://github.com/francisnardi/fanatics/settings`.
+   - Set **Description**: "Django REST API for order allocation in e-commerce, simulating Fanatics' system with AWS mocks and data analysis."
+   - Add **Topics**: `django`, `python`, `rest-api`, `e-commerce`, `aws`, `unit-testing`, `data-analysis`.
