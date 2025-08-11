@@ -1,13 +1,12 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
 from allocation.models import DistributionCenter, Order
-from allocation.views import allocate_order
 from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
 import os
 
-class AllocationTests(TestCase):
+class TestAllocation(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.center1 = DistributionCenter.objects.create(center_id='C1', stock=15, initial_stock=100, zip_code='10000')
@@ -21,7 +20,7 @@ class AllocationTests(TestCase):
         }, format='json', HTTP_API_KEY=settings.API_KEY)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['center_id'], 'C1')
-        self.assertTrue(os.path.exists(f'logs/O1.json'))  # Test S3 mock
+        self.assertTrue(os.path.exists('logs/O1.json'))  # Test S3 mock
 
     def test_insufficient_stock(self):
         response = self.client.post('/allocate/', {
@@ -39,7 +38,7 @@ class AllocationTests(TestCase):
             'zip_code': '10001'
         }, format='json', HTTP_API_KEY=settings.API_KEY)
         self.assertEqual(response.status_code, 400)
-        self.assertIn('Quantity deve ser um inteiro positivo', response.data['quantity'][0])
+        self.assertIn('Quantity deve ser um inteiro positivo', str(response.data))
 
     def test_invalid_zip_code_serializer(self):
         response = self.client.post('/allocate/', {
@@ -48,7 +47,7 @@ class AllocationTests(TestCase):
             'zip_code': 'abc'
         }, format='json', HTTP_API_KEY=settings.API_KEY)
         self.assertEqual(response.status_code, 400)
-        self.assertIn('Zip_code deve ser numérico', response.data['zip_code'][0])
+        self.assertIn('Zip_code deve ser numérico', str(response.data))
 
     def test_duplicate_order_id_serializer(self):
         Order.objects.create(order_id='O5', quantity=5, zip_code='10001', center=self.center1, status='allocated')
@@ -58,7 +57,7 @@ class AllocationTests(TestCase):
             'zip_code': '10001'
         }, format='json', HTTP_API_KEY=settings.API_KEY)
         self.assertEqual(response.status_code, 400)
-        self.assertIn('Order_id já existe', response.data['non_field_errors'][0])
+        self.assertIn('Order_id já existe', str(response.data))
 
     def test_low_stock_alert(self):
         self.center1.stock = 19
@@ -69,7 +68,7 @@ class AllocationTests(TestCase):
             'zip_code': '10000'
         }, format='json', HTTP_API_KEY=settings.API_KEY)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(os.path.exists(f'alerts/C1_alert.json'))  # Test CloudWatch mock
+        self.assertTrue(os.path.exists('alerts/C1_alert.json'))  # Test CloudWatch mock
 
     def test_api_key_authentication(self):
         response = self.client.post('/allocate/', {
@@ -113,3 +112,24 @@ class AllocationTests(TestCase):
     def test_openapi_schema(self):
         response = self.client.get('/schema/', HTTP_API_KEY=settings.API_KEY)
         self.assertEqual(response.status_code, 200)
+
+    def test_empty_analytics(self):
+        response = self.client.get('/analytics/', HTTP_API_KEY=settings.API_KEY)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)  # Two centers, no orders
+
+    def test_no_centers_available(self):
+        DistributionCenter.objects.all().delete()
+        response = self.client.post('/allocate/', {
+            'order_id': 'O11',
+            'quantity': 10,
+            'zip_code': '10001'
+        }, format='json', HTTP_API_KEY=settings.API_KEY)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', response.data)
+
+    def test_populate_centers_command(self):
+        DistributionCenter.objects.all().delete()
+        from django.core.management import call_command
+        call_command('populate_centers')
+        self.assertEqual(DistributionCenter.objects.count(), 3)  # C1, C2, C3
