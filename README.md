@@ -34,6 +34,13 @@ A Django REST API for allocating orders to distribution centers, simulating a sy
   docker build -t fanatics-api .
   docker run -p 8000:8000 fanatics-api
 
+## Test Coverage
+- Run tests with coverage:
+  ```bash
+  pip install coverage
+  coverage run manage.py test
+  coverage report
+
 ## Setup
 1. **Clone the repository**:
    ```bash
