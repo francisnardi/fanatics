@@ -24,13 +24,16 @@ jobs:
       - name: Create directories for mocks
         run: |
           mkdir -p logs alerts
+      - name: List project structure
+        run: |
+          ls -R
       - name: Apply migrations
         run: |
           python manage.py makemigrations --noinput
           python manage.py migrate --noinput
       - name: Run tests with coverage
         run: |
-          pytest --cov=. --cov-branch --cov-report=xml
+          pytest --cov=. --cov-branch --cov-report=xml --verbose
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
