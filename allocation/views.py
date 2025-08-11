@@ -110,6 +110,11 @@ def allocate_order_view(request):
 @permission_classes([IsAuthenticated])
 def center_analytics_view(request):
     one_month_ago = timezone.now() - timedelta(days=30)
+    if from_date:
+        try:
+            one_month_ago = datetime.fromisoformat(from_date)
+        except ValueError:
+            return Response({"error": "Invalid from_date format (use YYYY-MM-DD)"}, status=400)
     analytics = DistributionCenter.objects.annotate(
         total_orders=Count('orders', filter=models.Q(orders__status='allocated', orders__created_at__gte=one_month_ago)),
         total_quantity=Sum('orders__quantity', filter=models.Q(orders__status='allocated', orders__created_at__gte=one_month_ago)),
