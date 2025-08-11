@@ -15,6 +15,11 @@ class DistributionCenter(models.Model):
     def is_low_stock(self):
         return self.stock < 0.2 * self.initial_stock  
 
+    def save(self, *args, **kwargs):
+        if self.stock < 0:
+            raise ValueError("Stock cannot be negative")
+        super().save(*args, **kwargs)
+
 class Order(models.Model):
     order_id = models.CharField(max_length=50, unique=True)
     quantity = models.IntegerField()
