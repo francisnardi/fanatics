@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from allocation.views import allocate_order_view, center_analytics_view
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
