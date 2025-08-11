@@ -18,6 +18,8 @@ class DistributionCenter(models.Model):
     def save(self, *args, **kwargs):
         if self.stock < 0:
             raise ValueError("Stock cannot be negative")
+        if self.initial_stock < self.stock:
+            raise ValueError("Initial stock cannot be less than current stock")
         super().save(*args, **kwargs)
 
 class Order(models.Model):
