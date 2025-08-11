@@ -22,6 +22,18 @@ A Django REST API for allocating orders to distribution centers, simulating a sy
 - `alerts/`: Mock CloudWatch storage for low stock alerts.
 - `requirements.txt`: Project dependencies.
 
+## CI/CD
+- Automated tests run via GitHub Actions: [![Build Status](https://github.com/francisnardi/fanatics/workflows/CI/badge.svg)](https://github.com/francisnardi/fanatics/actions)
+
+## API Documentation
+- Access the OpenAPI schema at `/schema/` and interactive docs at `/docs/` after running the server.
+
+## Docker
+- Build and run with:
+  ```bash
+  docker build -t fanatics-api .
+  docker run -p 8000:8000 fanatics-api
+
 ## Setup
 1. **Clone the repository**:
    ```bash
