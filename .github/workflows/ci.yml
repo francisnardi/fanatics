@@ -32,8 +32,3 @@ jobs:
         run: |
           coverage run manage.py test
           coverage report
-      - name: Upload coverage report
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage.xml
-          fail_ci_if_error: false
