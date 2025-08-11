@@ -4,4 +4,4 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
 }
-API_KEY = 'abcdef123456'  
+API_KEY = 'ty/>Q438I8Ds'  
