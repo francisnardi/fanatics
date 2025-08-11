@@ -8,7 +8,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      DJANGO_SETTINGS_MODULE: order_allocation.settings  # Define explicitamente
+      DJANGO_SETTINGS_MODULE: order_allocation.settings
+      API_KEY: your-secret-key  # Para testes; em prod, use secrets
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -21,10 +22,13 @@ jobs:
           pip install -r requirements.txt
       - name: Create directories for mocks
         run: |
-          mkdir -p logs alerts  # Cria diretórios para evitar erros em testes que escrevem arquivos
+          mkdir -p logs alerts
       - name: Apply migrations
         run: |
           python manage.py makemigrations --noinput
           python manage.py migrate --noinput
-      - name: Run tests
-        run: python manage.py test
+      - name: Run tests with coverage
+        run: |
+          pip install coverage
+          coverage run manage.py test
+          coverage report
